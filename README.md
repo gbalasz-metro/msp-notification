@@ -6,7 +6,7 @@ MSP notification action
 ```
       - name: MSP Notification
         id: msp-notification
-        uses: gbalasz-metro/msp-notification@v0.5
+        uses: gbalasz-metro/msp-notification@v0.6
         with:
           status: started
           version: 1.1
