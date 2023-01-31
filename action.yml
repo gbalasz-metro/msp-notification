@@ -11,8 +11,8 @@ inputs:
   pipeline:
     description: Pipeline
     required: true
-  user:
-    description: User name
+  event:
+    description: Github event
     required: true
 
 runs:
@@ -22,12 +22,17 @@ runs:
       uses: aliencube/microsoft-teams-actions@v0.8.0
       with:
         webhook_uri: 'https://metro.webhook.office.com/webhookb2/b5dc51cc-e5d4-4c34-8972-cfd6fbef6426@64322308-09a9-47a3-8c1c-b82871d60568/IncomingWebhook/8578a4cb29824fe89d9ca1cc0480df6a/e2f7caeb-35a1-4d9c-a4bd-550f2b7427bd'
-        title: ${{ github.repository }} ${{ inputs.version }}
-        summary: Pipeline '${{inputs.pipeline}}' ${ucstatus} for ${{ github.repository }} version ${{ inputs.version }} by ${{  inputs.user }}
-        sections: '[{ "activityTitle": "Workflow <${{ inputs.pipeline }}> $ucstatus for <${{ github.repository }}> version ${{ inputs.version }}",  "activitySubtitle": "Event triggered by **${{  inputs.user }}**", "activityText": "**Commit message**: ${{ github.event.head_commit.message}}, [click here to go the commit.](${{ github.event.head_commit.url }})" }]'
-        actions: '[{ "@context": "http://schema.org", "@type": "OpenUri", "name": "Review Commit Diffs", "targets": [{ "os": "default", "uri": "${{ github.event.compare }}" }] }]'
+        title: ${{title}}
+        summary: ${{activityTitle}}
+        sections: '[{ "activityTitle": "${{activityTitle}}",  "activitySubtitle": "${{activitySubtitle}}", "activityText": "**Commit message**: ${{commitMessage}}" }]'
+        actions: '[{ "@context": "http://schema.org", "@type": "OpenUri", "name": "Review Commit Diffs", "targets": [{ "os": "default", "uri": "${{ inputs.event.compare }}" }] }]'
       env:
+        title: "${{ github.repository }} ${{ inputs.version }}"
+        activityTitle: "Workflow <${{inputs.pipeline}}> ${{ucstatus}} for <${{github.repository}}> version ${{ inputs.version }}"
+        activitySubtitle: "Event triggered by **${{  inputs.user }}**"
+        commitMessage: "${{ inputs.event.head_commit.message}}, [click here to go the commit.](${{ inputs.event.head_commit.url }})"
         ucstatus: ${{ inputs.status }}
+        user: ${{ inputs.event.head_commit.author.name }}
 
 branding:
   color: yellow
