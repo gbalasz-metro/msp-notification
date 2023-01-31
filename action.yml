@@ -1,0 +1,31 @@
+name: MSP Notification
+description: |-
+  Send notification to MS Teams
+inputs:
+  status:
+    description: Status
+    required: true
+  version:
+    description: Version
+    required: true
+  pipeline:
+    description: Pipeline
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Send message to MS Teams
+      uses: aliencube/microsoft-teams-actions@v0.8.0
+      with:
+        webhook_uri: 'https://metro.webhook.office.com/webhookb2/b5dc51cc-e5d4-4c34-8972-cfd6fbef6426@64322308-09a9-47a3-8c1c-b82871d60568/IncomingWebhook/8578a4cb29824fe89d9ca1cc0480df6a/e2f7caeb-35a1-4d9c-a4bd-550f2b7427bd'
+        title: ${{ github.repository }} ${{ inputs.version }}
+        summary: Pipeline '${{ inputs.pipeline }}' $ucstatus for ${{ github.repository }} version ${{ inputs.version }} by ${{  github.event.head_commit.author.name }}
+        sections: '[{ "activityTitle": "Workflow <${{ inputs.pipeline }}> $ucstatus for <${{ github.repository }}> version ${{ inputs.version }}",  "activitySubtitle": "Event triggered by **${{  github.event.head_commit.author.name }}**", "activityText": "**Commit message**: ${{ github.event.head_commit.message}}, [click here to go the commit.](${{ github.event.head_commit.url }})" }]'
+        actions: '[{ "@context": "http://schema.org", "@type": "OpenUri", "name": "Review Commit Diffs", "targets": [{ "os": "default", "uri": "${{ github.event.compare }}" }] }]'
+      env:
+        ucstatus: ${{ inputs.status }}
+
+branding:
+  color: yellow
+  icon: code
